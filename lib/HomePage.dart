@@ -1,3 +1,4 @@
+import 'package:bmi_calculator/ResultPage.dart';
 import 'package:counter_slider/counter_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isPressed = false;
-  double _currentSliderValue = 150;
+  bool isPressedF = false;
+  bool isPressedM = false;
+  double height = 150;
   int weight = 50;
   int age = 20;
+  void selectGender(String gender) {
+    setState(() {
+      if (gender == "Male") {
+        isPressedM = true;
+        isPressedF = false;
+      } else if (gender == "Female") {
+        isPressedM = false;
+        isPressedF = true;
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,13 +51,11 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   MaterialButton(
                     onPressed: () {
-                      setState(() {
-                        isPressed = !isPressed;
-                      });
+                      selectGender("Male");
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    color: (isPressed)
+                    color: (isPressedM)
                         ? const Color(0xff1D1F34)
                         : const Color(0xff121328),
                     child: const Padding(
@@ -73,15 +84,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   MaterialButton(
                     onPressed: () {
-                      setState(() {
-                        isPressed = !isPressed;
-                      });
+                      selectGender("Female");
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    color: (isPressed)
-                        ? const Color(0xff121328)
-                        : const Color(0xff1D1F34),
+                    color: (isPressedF)
+                        ? const Color(0xff1D1F34)
+                        : const Color(0xff121328),
                     hoverColor: const Color(0xff1D1F34),
                     child: const Padding(
                       padding: EdgeInsets.all(8.0),
@@ -136,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            _currentSliderValue.toStringAsFixed(0),
+                            height.toStringAsFixed(0),
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 35),
                           ),
@@ -151,13 +160,13 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       Slider(
-                        value: _currentSliderValue,
+                        value: height,
                         min: 0,
                         max: 250,
-                        label: _currentSliderValue.round().toString(),
+                        label: height.round().toString(),
                         onChanged: (double value) {
                           setState(() {
-                            _currentSliderValue = value;
+                            height = value;
                           });
                         },
                       ),
@@ -246,7 +255,24 @@ class _HomePageState extends State<HomePage> {
                 child: SizedBox(
                   width: double.infinity,
                   child: MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if((isPressedF == false && isPressedM == false) || (weight <= 0) || (age <= 0))
+                      {
+                        final snackBar = SnackBar(
+                          content: const Text('Invalid Data'),
+                          backgroundColor: Colors.red,
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {
+                              // Some code to undo the change.
+                            },
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }else {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>ResultPage(height: height, weight: weight, age: age,)));
+                      }
+                    },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                     color: Colors.redAccent,
